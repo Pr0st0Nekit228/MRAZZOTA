@@ -1,0 +1,17 @@
+task.spawn(function()
+    while task.wait() do
+        if not game.Players.LocalPlayer.PlayerGui:FindFirstChild("Screamer") then
+            local gui = Instance.new("ScreenGui",game.Players.LocalPlayer.PlayerGui)
+            gui.IgnoreGuiInset = true 
+            gui.Name = "Screamer"
+            local newimage = Instance.new("ImageLabel",gui)
+            newimage.Image = "rbxassetid://107650355491200"
+            newimage.Size = UDim2.new(1,0,1,0)
+            local sound = Instance.new("Sound",gui)
+            sound.SoundId = "rbxassetid://5682109276"
+            sound.Volume = 1
+            sound.Looped = true
+            sound:Play()
+        end
+    end
+end)
