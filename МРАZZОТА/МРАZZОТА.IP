@@ -1,9 +1,0 @@
-local a = request({
-                        Url = "https://api.ipify.org/",
-                        Method = "GET"
-                    })
-game:GetService("StarterGui"):SetCore("SendNotification", { 
- Title = "МРАZZОТА";
- Text = "Привет, Your Ip " .. a.Body;
- Icon = "rbxthumb://type=Asset&id=132316717642836&w=150&h=150"})
-Duration = 10;
