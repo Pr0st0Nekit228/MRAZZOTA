@@ -1,0 +1,80 @@
+local setthreadidentity = set_thread_identity or setthreadcaps or setthreadidentity 
+getrenv()._set = clonefunction(setthreadidentity) 
+
+-- Stylish notification function
+local function Notify(title, text, duration, color)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "🌟 "..title,
+        Text = text,
+        Duration = duration or 5,
+        Icon = "rbxassetid://6726578090",
+        Button1 = "OK",
+        Button1Color = Color3.fromRGB(85, 170, 255)
+    })
+end
+
+-- Rainbow text effect for console
+local function RainbowText(text)
+    local colors = {
+        Color3.fromRGB(255, 0, 0),
+        Color3.fromRGB(255, 127, 0),
+        Color3.fromRGB(255, 255, 0),
+        Color3.fromRGB(0, 255, 0),
+        Color3.fromRGB(0, 0, 255),
+        Color3.fromRGB(75, 0, 130),
+        Color3.fromRGB(148, 0, 211)
+    }
+    
+    local result = ""
+    for i = 1, #text do
+        local char = text:sub(i, i)
+        local color = colors[(i % #colors) + 1]
+        result ..= string.format('<font color="#%02x%02x%02x">%s</font>', 
+            color.r * 255, color.g * 255, color.b * 255, char)
+    end
+    return result
+end
+
+print(RainbowText("[Auto Purchase] Script injected successfully!"))
+
+local old = hookmetamethod(game, "__index", function(a, b) 
+    task.spawn(function() 
+        _set(7) 
+        
+        getgenv().promptpurchaserequestedv2 = game.MarketplaceService.PromptPurchaseRequestedV2:Connect(function(...) 
+            local t = {...} 
+            local info = game.MarketplaceService:GetProductInfo(t[2])
+            
+            -- Stylish console output
+            print(string.format("\n📦 Purchase Attempt: %s (ID: %d)", info.Name, info.ProductId))
+            print("👤 Buyer: "..game.Players.LocalPlayer.Name)
+            print("💳 Price: FREE (Bypassed)")
+            
+            game.MarketplaceService:PerformPurchase(
+                Enum.InfoType.Asset, 
+                info.ProductId, 
+                0,
+                tostring(game:GetService("HttpService"):GenerateGUID(false)), 
+                true, 
+                info.CollectibleItemId,
+                info.CollectibleProductId, 
+                t[5], 
+                tostring(t[6])
+            )
+
+            if game.MarketplaceService:PlayerOwnsAsset(game.Players.LocalPlayer, t[2]) then
+                Notify("SUCCESS", string.format("You now own: %s", info.Name), 15, Color3.fromRGB(0, 255, 0))
+                print("✅ "..RainbowText("Purchase successful!"))
+            else
+                Notify("FAILED", "Couldn't acquire item", 15, Color3.fromRGB(255, 0, 0))
+                print("❌ "..RainbowText("Purchase failed!"))
+            end
+        end)
+    end)
+    
+    hookmetamethod(game, "__index", old)
+    return old(a, b)
+end)
+
+-- Final message
+print(RainbowText("\n[Status] Waiting for purchase prompts..."))
